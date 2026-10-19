@@ -52,10 +52,22 @@ LightGBM с параметрами:
 
 Финальный прирост обеспечило объединение всех групп признаков: временных окон, поведенческих долей и MCC-статистик.
 
-## Запуск
+Данные необходимо скачать с Kaggle (датасет mrmorj/alfabattle-20) и поместить в папку archive/. Затем запустить ноутбук 01_exploration.ipynb.
 
-```bash
-python -m venv .venv
-.venv\Scripts\activate      # Windows
-pip install -r requirements.txt
+## Стек
+Python, Pandas, PyArrow, LightGBM, Scikit-learn, Jupyter Notebook.
+
+## Структура проекта
+```text
+.
+├── 01_exploration.ipynb      # EDA, генерация признаков, обучение модели
+├── .gitignore                # Исключение данных и окружения из Git
+├── README.md
+└── archive/                  # Сырые данные (не коммитятся)
 ```
+## Что можно улучшить
+Target Encoding для MCC-категорий (доля дефолтов в каждой категории).
+
+Кросс-валидация по времени (TimeSeriesSplit) вместо одного сплита.
+
+Блендинг с CatBoost или RNN-моделью (в соревновании RNN давала ~0.750).
