@@ -1,0 +1,15 @@
+# Данные (скрываем папку с данными целиком)
+archive/
+data/
+
+# Python (виртуальное окружение и кэш)
+.venv/
+__pycache__/
+*.pyc
+
+# Системные файлы
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
