@@ -20,13 +20,13 @@
 
 ```text
 .
-├── archive/                  # Исходные данные (игнорируется в Git)
-├── artifacts/                # Результаты обучения (игнорируется в Git)
+├── archive/                  # Исходные данные 
+├── artifacts/                # Результаты обучения 
 │   ├── lgb_model.txt         # Модель LightGBM
 │   ├── features.parquet      # Матрица признаков
 │   ├── oof.parquet           # OOF-предсказания
 │   └── feature_importance.csv
-├── 01.py                     # Скрипт обучения (Feature Engineering + CV)
+├── 01.py                     # Скрипт обучения 
 ├── 01_exploration.ipynb      # EDA
 ├── .gitignore
 └── README.md
