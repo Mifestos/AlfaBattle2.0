@@ -16,6 +16,8 @@ submission*.csv
 *.pkl
 *.joblib
 *_model.txt
+artifacts_v1/
+artifacts_v2/
 
 # ============================================================
 # PYTHON
@@ -47,3 +49,10 @@ Thumbs.db
 # СЕКРЕТЫ
 # ============================================================
 .env
+
+# Логи
+logs/
+*.log
+
+# CatBoost
+catboost_info/

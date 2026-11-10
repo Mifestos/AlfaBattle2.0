@@ -2,35 +2,48 @@
 
 Решение задачи бинарной классификации для предсказания вероятности дефолта клиента на основе транзакционной активности.
 
-**Метрика:** ROC-AUC
-**Результат:** CV ROC-AUC = 0.7517 ± 0.0037 
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
+![PyTorch](https://img.shields.io/badge/PyTorch-2.0%2B-orange)
+![LightGBM](https://img.shields.io/badge/LightGBM-4.0%2B-green)
+![CatBoost](https://img.shields.io/badge/CatBoost-1.2%2B-yellow)
 
-## Ключевые технические решения
+## Результаты
 
-*   **Эффективная работа с памятью (Chunking).** Данные представлены 50 parquet-файлами. Для предотвращения OOM (Out-Of-Memory) реализована пофайловая обработка. Вычисляются аддитивные агрегаты (суммы, счётчики, суммы квадратов), которые затем корректно объединяются. Дисперсия рассчитывается через параллельную формулу (`E[X²] - E[X]²`) для сохранения корректности при распределённой агрегации.
-*   **Leakage-free OOF Target Encoding.** Признак `mcc_risk_mean` (риск дефолта по категориям трат) является наиболее значимым. Для предотвращения утечки данных маппинг `MCC → риск` обучается строго на тренировочной части каждого фолда кросс-валидации. Применяется сглаживание (smoothing) для редких категорий.
-*   **Feature Engineering.**
-    *   RFM-анализ: давность транзакции (recency), частота, суммы.
-    *   Оконные агрегаты: 7, 30, 90 дней.
-    *   Тренды поведения: динамика количества транзакций и среднего чека (`activity_trend_30d`, `ticket_trend_30d`).
-    *   Разнообразие: энтропия MCC-категорий, доля топ-5 категорий, количество уникальных дней с тратами.
-*   **Обработка дисбаланса классов.** Доля миноритарного класса составляет ~2.76%. Используется параметр `scale_pos_weight=35` в LightGBM и Stratified K-Fold разбиение.
+Финальный пайплайн использует ансамбль из трех моделей (Blending).
+
+| Модель | OOF ROC-AUC |
+| :--- | :--- |
+| LightGBM (Baseline) | 0.76067 |
+| CatBoost | 0.76070 |
+| Transformer (DL) | 0.72762 |
+| **3-Way Blend (Final)** | **0.76373** |
+
+## Стек 
+Pandas, NumPy, PyArrow, LightGBM, CatBoost, Scikit-learn, PyTorch, SciPy.
+## Ключевые технические решения 
+
+* **Leakage-Free OOF Target Encoding:** Кодирование высококардинальных категориальных признаков (MCC-коды, тип продукта) со строгим разделением по фолдам и сглаживанием (Smoothing). Исключает утечку таргета (Data Leakage).
+* **Multimodal Deep Learning (PyTorch):** 
+  * *Sequence Tower:* GRU / Transformer Encoder с Attention и позиционным кодированием для сырых последовательностей транзакций.
+  * *Tabular Tower:* FT-Transformer для обработки плотных табличных признаков.
+  * *Fusion:* Cross-Attention механизм для объединения временных и табличных модальностей.
+* **Ensemble Architecture (Blending):** Взвешенное усреднение трех независимых моделей (LightGBM + CatBoost + DL) с подбором оптимальных весов через Grid Search.
+* **Modular Pipeline Orchestration:** Разделение пайплайна на изолированные модули (`v01` — FE+LGBM, `v02` — DL, `v03` — CatBoost, `v04` — Ensemble). Единый CLI-оркестратор (`run.py`), строгая типизация и изолированное логирование.
 
 ## Структура проекта
 
 ```text
 .
-├── archive/                  # Исходные данные 
-├── artifacts/                # Результаты обучения 
-│   ├── lgb_model.txt         # Модель LightGBM
-│   ├── features.parquet      # Матрица признаков
-│   ├── oof.parquet           # OOF-предсказания
-│   └── feature_importance.csv
-├── 01.py                     # Скрипт обучения 
-├── 01_exploration.ipynb      # EDA
-├── .gitignore
-└── README.md
+├── v01_baseline_gbdt/       # FE + LightGBM
+├── v02_deep_learning/       # PyTorch (Dataset, Model, Train)
+├── v03_catboost/            # CatBoost (Oblivious Trees)
+├── v04_ensemble/            # Блендинг (Grid Search) и Inference
+├── artifacts/               # Модели (OOF, weights, parquet)
+└── run.py                   # Оркестратор (CLI)
 ```
-
+## Запуск
+```bash
+python run.py
+```
 ## Автор
 GitHub: @Mifestos
