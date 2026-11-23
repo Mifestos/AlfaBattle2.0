@@ -26,3 +26,7 @@ logs/
 .vscode/
 .idea/
 .DS_Store
+
+
+optuna_studies.db
+gbdt_params.json

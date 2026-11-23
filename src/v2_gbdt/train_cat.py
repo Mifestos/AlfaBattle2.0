@@ -4,6 +4,7 @@ from utils import (
     RANDOM_STATE,
     N_FOLDS,
     logger,
+    apply_tuned_params,
     load_data_and_splits,
     evaluate_and_save,
 )
@@ -23,8 +24,7 @@ def main():
         "gpu_ram_part": 0.85,
         "verbose": 0,
     }
-
-
+    params = apply_tuned_params("cat", params)
 
     oof_train = np.zeros(len(train_idx))
     holdout_pred = np.zeros(len(holdout_idx))
@@ -40,7 +40,7 @@ def main():
         model.fit(
             X.iloc[tr_idx], y[tr_idx],
             eval_set=(X.iloc[va_idx], y[va_idx]),
-            early_stopping_rounds=200,
+            early_stopping_rounds=300,
             verbose=False,
         )
 

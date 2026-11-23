@@ -8,3 +8,5 @@ catboost
 xgboost
 pyarrow
 torch==2.6.0+cu124
+optuna
+optuna-integration

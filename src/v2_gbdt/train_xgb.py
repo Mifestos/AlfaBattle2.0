@@ -4,6 +4,7 @@ from utils import (
     RANDOM_STATE,
     N_FOLDS,
     logger,
+    apply_tuned_params,
     load_data_and_splits,
     evaluate_and_save,
 )
@@ -23,11 +24,11 @@ def main():
         "subsample": 0.8,
         "enable_categorical": True,
         "eval_metric": "auc",
-        "early_stopping_rounds": 150,
+        "early_stopping_rounds": 250,
         "tree_method": "hist",
         "device": "cuda",
     }
-
+    params = apply_tuned_params("xgb", params)
 
     oof_train = np.zeros(len(train_idx))
     holdout_pred = np.zeros(len(holdout_idx))
