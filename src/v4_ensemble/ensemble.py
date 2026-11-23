@@ -17,12 +17,15 @@ SUBMISSIONS_DIR = ROOT_DIR / "submissions"
 SUBMISSIONS_DIR.mkdir(parents=True, exist_ok=True)
 
 MODELS = {
-    "lgbm": "v3_lgbm.npz",
-    "xgb": "v3_xgb.npz",
-    "cat": "v3_cat.npz",
+    "lgbm_v3": "v3_lgbm.npz",
+    "xgb_v3": "v3_xgb.npz",
+    "cat_v3": "v3_cat.npz",
+    "lgbm_v2": "backup_v2/v2_lgbm.npz",
     "gru": "v3_gru.npz",
-    "hybrid": "v3_hybrid.npz",
+    "hybrid_v3": "v3_hybrid.npz",
+    "hybrid_v2": "backup_v2/v3_hybrid_v2feats.npz",
 }
+
 
 
 def to_logits(probs: np.ndarray, eps: float = 1e-6) -> np.ndarray:
